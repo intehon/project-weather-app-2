@@ -116,7 +116,7 @@ const fetchAndDisplayWeatherByLocation = () => {
         .catch((err) => {
           console.log("Error fetching user location data: ", err);
           userLocationElement.textContent = "Failed to fetch location. Showing Stockholm as default.";
-          fetchAndDisplayWeather('Stockholm,Sweden');
+          fetchAndDisplayWeather('Stockholm');
         });
     });
   } else {
@@ -125,7 +125,7 @@ const fetchAndDisplayWeatherByLocation = () => {
 };
 
 // Call the function to fetch and display default location's weather
-fetchAndDisplayWeather('Stockholm,Sweden');
+fetchAndDisplayWeather('Stockholm');
 
 // Call the function to fetch weather based on user's location
 fetchAndDisplayWeatherByLocation();
