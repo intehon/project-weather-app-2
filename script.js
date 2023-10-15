@@ -16,6 +16,7 @@ const fetchAndDisplayWeather = (location) => {
   fetch(API_URL)
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
           // Get the timezone offset from the API response in seconds
           const timezoneOffset = data.timezone;
 
@@ -78,9 +79,6 @@ const fetchAndDisplayWeather = (location) => {
       .catch((err) => console.log("Error: ", err));
 };
 
-// Call the function with the default location (Stockholm, Sweden) on page load
-fetchAndDisplayWeather('Stockholm,Sweden');
-
 // Function to handle search for different cities
 const searchCity = () => {
   let searchValue = searchInput.value;
@@ -97,3 +95,37 @@ const handleKeyPress = (event) => {
     event.preventDefault();
   }
 };
+
+// Function to fetch and display weather data based on user's location
+const fetchAndDisplayWeatherByLocation = () => {
+  const userLocationElement = document.getElementById('userLocation');
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const userLatitude = position.coords.latitude;
+      const userLongitude = position.coords.longitude;
+      const API_LOCATION_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${userLatitude}&lon=${userLongitude}&units=metric&APPID=${API_KEY}`;
+
+      fetch(API_LOCATION_URL)
+        .then((res) => res.json())
+        .then((data) => {
+          const userLocation = data.name;
+          userLocationElement.textContent = `Your Current Location: ${userLocation}`;
+          fetchAndDisplayWeather(userLocation);
+        })
+        .catch((err) => {
+          console.log("Error fetching user location data: ", err);
+          userLocationElement.textContent = "Failed to fetch location. Showing Stockholm as default.";
+          fetchAndDisplayWeather('Stockholm,Sweden');
+        });
+    });
+  } else {
+    userLocationElement.textContent = "Geolocation is not supported by this browser.";
+  }
+};
+
+// Call the function to fetch and display default location's weather
+fetchAndDisplayWeather('Stockholm,Sweden');
+
+// Call the function to fetch weather based on user's location
+fetchAndDisplayWeatherByLocation();
