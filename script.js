@@ -23,12 +23,16 @@ const searchCity = () => {
         //Store weather types in variable
         const typeOfWeather = data.weather[0].main
 
+        //Store temperature in variable
+        //Convert temp from Kelvin to Celcius
+        const temperature = Math.round((data.main.temp - 273) * 10) / 10 
+
         weatherApp.innerHTML = ''
         weatherApp.innerHTML += `
         <section class="weather-card">
-        <p>${data.weather[0].description} | ${Math.round(data.main.temp * 10) / 10}°</p>
-            <p>sunrise ${sunrise.getHours() < 10 ? '0' + sunrise.getHours() : sunrise.getHours()}.${sunrise.getMinutes()}</p>
-            <p>sunset ${sunset.getHours() < 10 ? '0' + sunset.getHours() : sunset.getHours()}.${sunset.getMinutes()}</p>
+        <p>${data.weather[0].description} | ${temperature}°</p>
+            <p>sunrise ${sunrise.getHours() < 10 ? '0' + sunrise.getHours() : sunrise.getHours()}.${sunset.getMinutes() < 10 ? '0' + sunset.getMinutes() : sunset.getMinutes()}</p>
+            <p>sunset ${sunset.getHours() < 10 ? '0' + sunset.getHours() : sunset.getHours()}.${sunset.getMinutes() < 10 ? '0' + sunset.getMinutes() : sunset.getMinutes()}</p>
         </section>
         `
          //Statement to change bg-color depending on weather
@@ -47,6 +51,31 @@ const searchCity = () => {
             weatherApp.parentNode.style.backgroundColor = "#A3DEF7"
           }
     })
+    .then(() => {
+        let fetch_url = `https://api.openweathermap.org/data/2.5/forecast?q=${searchValue}&units=metric&APPID=${API_KEY}`
+
+        fetch(fetch_url)
+        .then((res) => res.json())
+        .then((data) => {
+        //Filter to use forecast for the same hour each day
+        const filteredForecast = data.list.filter(item => item.dt_txt.includes('12:00')) 
+        //Loop through each day of forecast 
+        filteredForecast.forEach((day) => {
+            //Convert date to text 
+            const date = new Date(day.dt * 1000)
+            const dayName = weekDays[date.getDay()]
+            //Putting the info into the html.
+            weatherApp.innerHTML += `
+            <section class="forecast">
+            <p class="forecast-text">${dayName}</p>
+            <p class="forecast-text"> ${Math.round(day.main.temp * 10) / 10}°</p>
+          </section>
+            `             
+    })
+        })
+        .catch((err) => console.log("Error in second fetch: ", err))
+    })
+    .catch((err) => console.log("Error: ", err))
 }
 
 
