@@ -1,0 +1,52 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+.weather-app {
+	font-family: 'Montserrat';
+	font-weight: regular;
+    font-size: 20px;
+    margin: 30px 50px;
+    height: 100%;
+    padding: 10px;  
+}
+
+.weather-card {
+    display: flex;
+	flex-direction: column;
+}
+
+p {
+    padding: 2px;
+}
+
+.icon {
+	margin-top: 70px;
+}
+
+.description {
+	font-size: 40px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+	font-weight: bold;
+}
+
+.forecast {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	border-bottom: 1px dashed;
+}
+.forecast:last-child {
+	border-bottom: none;
+}
+
+.forecast-text {
+	margin: 4px 0 5px 0;
+}
+
+@media (min-width: 436px) {
+	.weather-app {
+		max-width: 436px;
+	}
+}
