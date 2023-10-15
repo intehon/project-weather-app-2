@@ -4,8 +4,11 @@ const API_URL = `https://api.openweathermap.org/data/2.5/weather?q=Stockholm,Swe
 const API_FORECAST_URL = `https://api.openweathermap.org/data/2.5/forecast?q=Stockholm,Sweden&units=metric&APPID=${API_KEY}`
 
 const weatherApp = document.getElementById('weatherApp')
+const searchInput = document.getElementById('searchInput')
 const weekDays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]
 
+
+//Function to search for different cities
 const searchCity = () => {
     //Store the search input in a variable
     let searchValue = searchInput.value

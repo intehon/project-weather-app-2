@@ -2,6 +2,10 @@
     box-sizing: border-box;
     margin: 0;
 }
+
+body {
+    max-width: 400px;
+}
 .weather-app {
 	font-family: 'Montserrat';
 	font-weight: regular;
@@ -22,7 +26,7 @@
     padding: 8px;
     font-family: 'Montserrat';
 	font-weight: regular;
-    font-size: 20px;
+    font-size: 15px;
     border-radius: 15px;
     border: none
 }
@@ -31,7 +35,7 @@
     padding: 8px;
     font-family: 'Montserrat';
 	font-weight: regular;
-    font-size: 20px;
+    font-size: 15px;
     border-radius: 15px;
     border: none
 }
