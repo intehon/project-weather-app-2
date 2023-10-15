@@ -8,70 +8,74 @@ const formatTime = (time) => {
 
 // Function to fetch and display weather data
 const fetchAndDisplayWeather = (location) => {
-    const API_URL = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&APPID=${API_KEY}`;
-    const API_FORECAST_URL = `https://api.openweathermap.org/data/2.5/forecast?q=${location}&units=metric&APPID=${API_KEY}`;
-    const weatherApp = document.getElementById('weatherApp');
-    const weekDays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+  const API_URL = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&APPID=${API_KEY}`;
+  const API_FORECAST_URL = `https://api.openweathermap.org/data/2.5/forecast?q=${location}&units=metric&APPID=${API_KEY}`;
+  const weatherApp = document.getElementById('weatherApp');
+  const weekDays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
-    fetch(API_URL)
-        .then((res) => res.json())
-        .then((data) => {
-            // Store sunrise and sunset time in variables
-            const sunrise = new Date(data.sys.sunrise * 1000);
-            const sunset = new Date(data.sys.sunset * 1000);
+  fetch(API_URL)
+      .then((res) => res.json())
+      .then((data) => {
+          // Get the timezone offset from the API response in seconds
+          const timezoneOffset = data.timezone;
 
-            // Store weather types in variable
-            const typeOfWeather = data.weather[0].main;
+          // Convert UTC sunrise and sunset times to local time
+          const now = new Date();
+          const localSunrise = new Date(data.sys.sunrise * 1000 + timezoneOffset * 1000 + (now.getTimezoneOffset() * 60000));
+          const localSunset = new Date(data.sys.sunset * 1000 + timezoneOffset * 1000 + (now.getTimezoneOffset() * 60000));
 
-            // Store temperature in variable and convert from Kelvin to Celsius
-            const temperature = Math.round(data.main.temp * 10) / 10;
+          // Store weather types in variable
+          const typeOfWeather = data.weather[0].main;
 
-            // Update the HTML with weather data
-            weatherApp.innerHTML = `
-                <section class="weather-card">
-                    <p>${data.weather[0].description} | ${temperature}°</p>
-                    <p>sunrise ${formatTime(sunrise.getHours())}:${formatTime(sunrise.getMinutes())}</p>
-                    <p>sunset ${formatTime(sunset.getHours())}:${formatTime(sunset.getMinutes())}</p>
-                </section>
-            `;
+          // Store temperature in variable and convert from Kelvin to Celsius
+          const temperature = Math.round(data.main.temp * 10) / 10;
 
-            // Update background and text color based on weather type
-            if (typeOfWeather === "Clear") {
-                weatherApp.innerHTML += `<img class="icon" src="./design/design2/icons/noun_Sunglasses_2055147.svg"><h2 class="description">Get your sunnies on. ${location} is looking rather great today.</h2>`;
-                weatherApp.style.color = "#2A5510";
-                weatherApp.parentNode.style.backgroundColor = "#F7E9B9";
-            } else if (typeOfWeather === "Clouds") {
-                weatherApp.innerHTML += `<img class="icon" src="./design/design2/icons/noun_Cloud_1188486.svg"><h2 class="description">Light a fire and get cosy. ${location} is looking grey today.</h2>`;
-                weatherApp.style.color = "#F47775";
-                weatherApp.parentNode.style.backgroundColor = "#F4F7F8";
-            } else {
-                weatherApp.innerHTML += `<img class="icon" src="./design/design2/icons/noun_Umbrella_2030530.svg"><h2 class "description">Don't forget your umbrella! It's wet in ${location} today!</h2>`;
-                weatherApp.style.color = "#164A68";
-                weatherApp.parentNode.style.backgroundColor = "#A3DEF7";
-            }
-        })
-        .then(() => {
-            fetch(API_FORECAST_URL)
-                .then((res) => res.json())
-                .then((data) => {
-                    // Filter to use forecast for the same hour each day
-                    const filteredForecast = data.list.filter((item) => item.dt_txt.includes('12:00'));
+          // Update the HTML with weather data
+          weatherApp.innerHTML = `
+              <section class="weather-card">
+                  <p>${data.weather[0].description} | ${temperature}°</p>
+                  <p>sunrise ${formatTime(localSunrise.getHours())}:${formatTime(localSunrise.getMinutes())}</p>
+                  <p>sunset ${formatTime(localSunset.getHours())}:${formatTime(localSunset.getMinutes())}</p>
+              </section>
+          `;
 
-                    // Update the HTML with the forecast data
-                    filteredForecast.forEach((day) => {
-                        const date = new Date(day.dt * 1000);
-                        const dayName = weekDays[date.getDay()];
-                        weatherApp.innerHTML += `
-                            <section class="forecast">
-                                <p class="forecast-text">${dayName}</p>
-                                <p class="forecast-text"> ${Math.round(day.main.temp * 10) / 10}°</p>
-                            </section>
-                        `;
-                    });
-                })
-                .catch((err) => console.log("Error in fetching forecast: ", err));
-        })
-        .catch((err) => console.log("Error: ", err));
+          // Update background and text color based on weather type
+          if (typeOfWeather === "Clear") {
+              weatherApp.innerHTML += `<img class="icon" src="./design/design2/icons/noun_Sunglasses_2055147.svg"><h2 class="description">Get your sunnies on. ${location} is looking rather great today.</h2>`;
+              weatherApp.style.color = "#2A5510";
+              weatherApp.parentNode.style.backgroundColor = "#F7E9B9";
+          } else if (typeOfWeather === "Clouds") {
+              weatherApp.innerHTML += `<img class="icon" src="./design/design2/icons/noun_Cloud_1188486.svg"><h2 class="description">Light a fire and get cosy. ${location} is looking grey today.</h2>`;
+              weatherApp.style.color = "#F47775";
+              weatherApp.parentNode.style.backgroundColor = "#F4F7F8";
+          } else {
+              weatherApp.innerHTML += `<img class="icon" src="./design/design2/icons/noun_Umbrella_2030530.svg"><h2 class "description">Don't forget your umbrella! It's wet in ${location} today!</h2>`;
+              weatherApp.style.color = "#164A68";
+              weatherApp.parentNode.style.backgroundColor = "#A3DEF7";
+          }
+      })
+      .then(() => {
+          fetch(API_FORECAST_URL)
+              .then((res) => res.json())
+              .then((data) => {
+                  // Filter to use forecast for the same hour each day
+                  const filteredForecast = data.list.filter((item) => item.dt_txt.includes('12:00'));
+
+                  // Update the HTML with the forecast data
+                  filteredForecast.forEach((day) => {
+                      const date = new Date(day.dt * 1000);
+                      const dayName = weekDays[date.getDay()];
+                      weatherApp.innerHTML += `
+                          <section class="forecast">
+                              <p class="forecast-text">${dayName}</p>
+                              <p class="forecast-text"> ${Math.round(day.main.temp * 10) / 10}°</p>
+                          </section>
+                      `;
+                  });
+              })
+              .catch((err) => console.log("Error in fetching forecast: ", err));
+      })
+      .catch((err) => console.log("Error: ", err));
 };
 
 // Call the function with the default location (Stockholm, Sweden) on page load
@@ -79,6 +83,6 @@ fetchAndDisplayWeather('Stockholm,Sweden');
 
 // Function to handle search for different cities
 const searchCity = () => {
-    let searchValue = searchInput.value;
-    fetchAndDisplayWeather(searchValue);
+  let searchValue = searchInput.value;
+  fetchAndDisplayWeather(searchValue);
 };
