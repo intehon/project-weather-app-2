@@ -85,4 +85,15 @@ fetchAndDisplayWeather('Stockholm,Sweden');
 const searchCity = () => {
   let searchValue = searchInput.value;
   fetchAndDisplayWeather(searchValue);
+  // Clearing input field
+  searchInput.value = '';
+};
+
+// Function to handle Enter key press
+const handleKeyPress = (event) => {
+  if (event.key === 'Enter') {
+    searchCity();
+    // Prevent form submission
+    event.preventDefault();
+  }
 };
